@@ -3,13 +3,13 @@ import ColorOptionsManager from "./ColorOptionsManager";
 import TileLoader from "../../components/TileLoader";
 
 const DEFAULT_ATTRIBUTES = {
-  effects: ["Concrete", "Stone", "Wood", "Marble", "Metal", "Contemporary", "Precious Metal", "Artisan", "Carpet"],
-  formats: ["Small", "Medium", "Large", "Slabs", "Planks", "Stripes", "Chevron", "Hexagon"],
+  effects: [],
+  formats: [],
   tileUses: ["Bathroom Wall", "Outdoor Wall", "Kitchen Wall", "Wall Tile", "Backsplash", "Shower Wall", "Kitchen Floor", "Floor Tile", "Bathroom Floor", "Commercial Floor", "Outdoor Floor", "Shower Floor", "Pool Tile"],
   styles: ["Traditional", "Contemporary", "Rustic", "Modern", "Transitional", "Industrial", "Classic", "Mediterranean", "Mid Century", "Farmhouse", "Craftsman", "Beach", "Cottage", "Tropical", "Art Deco", "Whimsical", "Spanish Revival"],
   materials: ["Ceramic & Porcelain", "Porcelain", "Stone", "Marble", "Glass", "Ceramic", "Terrazzo", "Pebble Tile", "Terracotta", "Lava Stone", "Clay Brick", "Cement"],
   looks: ["Stone Look", "Decorative Look", "Marble Look", "Concrete Look", "Solid Color", "Wood Look", "3D", "Subway Tile"],
-  finishes: ["Matte", "Polished", "Textured", "Satin", "Crackled"]
+  finishes: []
 };
 
 const QuickAddProduct = ({ series, onCancel, onSuccess }) => {
@@ -45,14 +45,14 @@ const QuickAddProduct = ({ series, onCancel, onSuccess }) => {
     setArr(arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val]);
 
   const [dbAttributes, setDbAttributes] = useState({
-    colors:    ["Beige","Brown","White","Black","Light Grey","Dark Grey","Blue"],
-    effects:   ["Concrete","Stone","Wood","Marble","Metal","Contemporary","Precious Metal","Artisan","Carpet"],
-    formats:   ["Small","Medium","Large","Slabs","Planks","Stripes","Chevron","Hexagon"],
+    colors:    [],
+    effects:   [],
+    formats:   [],
     tileUses:  ["Bathroom Wall","Outdoor Wall","Kitchen Wall","Wall Tile","Backsplash","Shower Wall","Kitchen Floor","Floor Tile","Bathroom Floor","Commercial Floor","Outdoor Floor","Shower Floor","Pool Tile"],
     styles:    ["Traditional","Contemporary","Rustic","Modern","Transitional","Industrial","Classic","Mediterranean","Mid Century","Farmhouse","Craftsman","Beach","Cottage","Tropical","Art Deco","Whimsical","Spanish Revival"],
     materials: ["Ceramic & Porcelain","Porcelain","Stone","Marble","Glass","Ceramic","Terrazzo","Pebble Tile","Terracotta","Lava Stone","Clay Brick","Cement"],
     looks:     ["Stone Look","Decorative Look","Marble Look","Concrete Look","Solid Color","Wood Look","3D","Subway Tile"],
-    finishes:  ["Matte","Polished","Textured","Satin","Crackled"]
+    finishes:  []
   });
 
   const [customInputs, setCustomInputs] = useState({});
@@ -243,14 +243,14 @@ const QuickAddProduct = ({ series, onCancel, onSuccess }) => {
     formData.append("price", 0);
     formData.append("description", description);
     formData.append("sizes", JSON.stringify([]));
-    formData.append("effects",   JSON.stringify(effects));
-    formData.append("formats",   JSON.stringify(formats));
+    formData.append("effects",   JSON.stringify([]));
+    formData.append("formats",   JSON.stringify([]));
     formData.append("colors",    JSON.stringify([]));
     formData.append("tileUses",  JSON.stringify(tileUses));
     formData.append("styles",    JSON.stringify(styles));
     formData.append("materials", JSON.stringify(materials));
     formData.append("looks",     JSON.stringify(looks));
-    formData.append("finishes",  JSON.stringify(finishes));
+    formData.append("finishes",  JSON.stringify([]));
 
     images.forEach(f => { if (f) formData.append("images", f); });
     if (video) formData.append("video", video);
@@ -291,6 +291,9 @@ const QuickAddProduct = ({ series, onCancel, onSuccess }) => {
         colors: opt.colors || (opt.color ? [opt.color] : []), 
         shapes: opt.shapes || [],
         shape: opt.shape || "",
+        effects: opt.effects || [],
+        finishes: opt.finishes || [],
+        formats: opt.formats || [],
         color: opt.color, 
         name: opt.name, 
         sku: opt.sku || "",
@@ -428,13 +431,10 @@ const QuickAddProduct = ({ series, onCancel, onSuccess }) => {
           <p className="text-[11px] text-gray-400 mb-4">Click chips to select — selected tags will appear on the product page</p>
           <div className="space-y-4">
             {[
-              { label: "Effect",   key: "effects",   state: effects,   set: setEffects },
-              { label: "Format",   key: "formats",   state: formats,   set: setFormats },
               { label: "Tile Use", key: "tileUses",  state: tileUses,  set: setTileUses },
               { label: "Style",    key: "styles",    state: styles,    set: setStyles },
               { label: "Material", key: "materials", state: materials, set: setMaterials },
               { label: "Look",     key: "looks",     state: looks,     set: setLooks },
-              { label: "Finish",   key: "finishes",  state: finishes,  set: setFinishes },
             ].map(({ label, key, state, set }) => (
               <div key={key} className="flex items-start gap-4">
                 <span className="w-16 shrink-0 text-[10px] font-semibold text-gray-500 uppercase tracking-wider pt-1.5">{label}</span>

@@ -4,13 +4,13 @@ import { COLLECTIONS } from "../constants";
 import ColorOptionsManager from "./ColorOptionsManager";
 
 const DEFAULT_ATTRIBUTES = {
-  effects: ["Concrete", "Stone", "Wood", "Marble", "Metal", "Contemporary", "Precious Metal", "Artisan", "Carpet"],
-  formats: ["Small", "Medium", "Large", "Slabs", "Planks", "Stripes", "Chevron", "Hexagon"],
+  effects: [],
+  formats: [],
   tileUses: ["Bathroom Wall", "Outdoor Wall", "Kitchen Wall", "Wall Tile", "Backsplash", "Shower Wall", "Kitchen Floor", "Floor Tile", "Bathroom Floor", "Commercial Floor", "Outdoor Floor", "Shower Floor", "Pool Tile"],
   styles: ["Traditional", "Contemporary", "Rustic", "Modern", "Transitional", "Industrial", "Classic", "Mediterranean", "Mid Century", "Farmhouse", "Craftsman", "Beach", "Cottage", "Tropical", "Art Deco", "Whimsical", "Spanish Revival"],
   materials: ["Ceramic & Porcelain", "Porcelain", "Stone", "Marble", "Glass", "Ceramic", "Terrazzo", "Pebble Tile", "Terracotta", "Lava Stone", "Clay Brick", "Cement"],
   looks: ["Stone Look", "Decorative Look", "Marble Look", "Concrete Look", "Solid Color", "Wood Look", "3D", "Subway Tile"],
-  finishes: ["Matte", "Polished", "Textured", "Satin", "Crackled"]
+  finishes: []
 };
 
 const MultiSelectGroup = React.memo(({ title, attrKey, options, selected, toggleSelection, allowCustom, customVal, setCustomVal, onAddCustom, onDeleteCustom }) => {
@@ -104,14 +104,14 @@ const UploadProduct = ({ initialSeries = "" }) => {
   const [colorInput, setColorInput] = useState(""); // Temporary input value
 
   const [dbAttributes, setDbAttributes] = useState({
-    colors: ["Beige", "Brown", "White", "Black", "Light Grey", "Dark Grey", "Blue"],
-    effects: ["Concrete", "Stone", "Wood", "Marble", "Metal", "Contemporary", "Precious Metal", "Artisan", "Carpet"],
-    formats: ["Small", "Medium", "Large", "Slabs", "Planks", "Stripes", "Chevron", "Hexagon"],
+    colors: [],
+    effects: [],
+    formats: [],
     tileUses: ["Bathroom Wall", "Outdoor Wall", "Kitchen Wall", "Wall Tile", "Backsplash", "Shower Wall", "Kitchen Floor", "Floor Tile", "Bathroom Floor", "Commercial Floor", "Outdoor Floor", "Shower Floor", "Pool Tile"],
     styles: ["Traditional", "Contemporary", "Rustic", "Modern", "Transitional", "Industrial", "Classic", "Mediterranean", "Mid Century", "Farmhouse", "Craftsman", "Beach", "Cottage", "Tropical", "Art Deco", "Whimsical", "Spanish Revival"],
     materials: ["Ceramic & Porcelain", "Porcelain", "Stone", "Marble", "Glass", "Ceramic", "Terrazzo", "Pebble Tile", "Terracotta", "Lava Stone", "Clay Brick", "Cement"],
     looks: ["Stone Look", "Decorative Look", "Marble Look", "Concrete Look", "Solid Color", "Wood Look", "3D", "Subway Tile"],
-    finishes: ["Matte", "Polished", "Textured", "Satin", "Crackled"]
+    finishes: []
   });
 
   React.useEffect(() => {

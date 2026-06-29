@@ -32,16 +32,17 @@ export default function ProductDetails() {
   const [calcWidth, setCalcWidth] = useState("");
   const [calcMessage, setCalcMessage] = useState("");
 
-  const [wastagePercentage, setWastagePercentage] = useState(15); // 0, 10, or 15
+  const [wastagePercentage, setWastagePercentage] = useState(0); // 0 (none), 10, or 15
   const [inputSqft, setInputSqft] = useState("");
   const [inputBoxes, setInputBoxes] = useState("");
 
   const handleWastageChange = (pct) => {
-    setWastagePercentage(pct);
+    const nextPct = wastagePercentage === pct ? 0 : pct;
+    setWastagePercentage(nextPct);
     const sqftBox = (selectedOption && selectedOption.sqftPerBox) ? selectedOption.sqftPerBox : (product?.sqftPerBox || 5.38);
     if (inputSqft) {
       const area = parseFloat(inputSqft);
-      const multiplier = 1 + (pct / 100);
+      const multiplier = 1 + (nextPct / 100);
       const boxes = Math.ceil((area * multiplier) / sqftBox);
       setInputBoxes(boxes);
     }
@@ -251,10 +252,10 @@ export default function ProductDetails() {
       </div>
 
       <div className="max-w-[1400px] mx-auto px-6 mt-12">
-        <div className="flex flex-col lg:flex-row gap-12 xl:gap-20">
+        <div className="flex flex-col lg:flex-row gap-6 xl:gap-10">
 
           {/* Gallery Section - 2 Column Grid */}
-          <div className="w-full lg:w-[70%]">
+          <div className="w-full lg:w-[65%]">
             <div className="grid grid-cols-2 gap-2">
               {/* Video Card */}
               {hasVideo && (
@@ -304,7 +305,7 @@ export default function ProductDetails() {
           </div>
 
           {/* Details Section */}
-          <div className="w-full lg:w-[30%] flex flex-col py-4">
+          <div className="w-full lg:w-[35%] flex flex-col py-4">
             <h1 className="text-[18px] font-bold text-gray-950 leading-tight mb-4 tracking-tight">
               {/* Show only Collection Name if selected, otherwise main product name */}
               {selectedOption?.productName || product.name}
@@ -439,12 +440,12 @@ export default function ProductDetails() {
                                   setSelectedSize(optSizes[0]);
                                 }
                               }}
-                              className={`w-14 h-14 flex-shrink-0 border-2 transition-all duration-300 relative overflow-hidden flex items-center justify-center p-0.5 rounded-sm ${isSelected
+                              className={`w-14 h-14 flex-shrink-0 border-2 transition-all duration-300 relative overflow-hidden flex items-center justify-center p-0.5 rounded-none ${isSelected
                                 ? 'border-black shadow-none'
                                 : 'border-gray-200 bg-white shadow-none hover:border-black'
                                 }`}
                             >
-                              <div className="w-full h-full overflow-hidden rounded-sm">
+                              <div className="w-full h-full overflow-hidden rounded-none">
                                 <img
                                   src={getImageUrl(
                                     product.variationColors?.find(vc => vc.name === (Array.isArray(option.colors) ? option.colors[0] : option.color))?.image || 
@@ -457,7 +458,7 @@ export default function ProductDetails() {
                                 />
                               </div>
                               {isSelected && (
-                                <div className="absolute inset-0 border-2 border-gray-900 rounded-sm pointer-events-none" />
+                                <div className="absolute inset-0 border-2 border-gray-900 rounded-none pointer-events-none" />
                               )}
                             </button>
 
@@ -470,7 +471,7 @@ export default function ProductDetails() {
                             </span>
 
                             {isHovered && (
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-48 bg-white shadow-2xl rounded-sm border border-gray-100 overflow-hidden pointer-events-none">
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-48 bg-white shadow-2xl rounded-none border border-gray-100 overflow-hidden pointer-events-none">
                                 <div className="aspect-square w-full">
                                   <img
                                     src={getImageUrl(option.images?.[0])}
@@ -536,10 +537,10 @@ export default function ProductDetails() {
                                 }
                               }
                             }}
-                            className={`px-6 py-2.5 text-[11px] font-semibold tracking-widest border transition-all uppercase ${
+                            className={`px-6 py-2.5 text-[11px] font-semibold tracking-widest border-2 transition-all uppercase rounded-none ${
                               (selectedSize === size)
                                 ? 'border-black bg-white text-black shadow-sm'
-                                : 'border-gray-200 text-gray-400 hover:border-gray-900 hover:text-black'
+                                : 'border-gray-200 text-gray-400 hover:border-black hover:text-black'
                               }`}
                           >
                             {size}
@@ -618,7 +619,7 @@ export default function ProductDetails() {
               <div className="mb-6">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Add Extra for Cuts & Waste</span>
                 <div className="flex bg-gray-50 border border-gray-200 p-0.5 rounded w-full max-w-xs">
-                  {[0, 10, 15].map((pct) => (
+                  {[10, 15].map((pct) => (
                     <button
                       key={pct}
                       type="button"
@@ -629,7 +630,7 @@ export default function ProductDetails() {
                           : 'text-gray-500 hover:text-black hover:bg-gray-100'
                       }`}
                     >
-                      {pct === 0 ? "0%" : pct === 15 ? "15% (Rec.)" : `${pct}%`}
+                      {`${pct}%`}
                     </button>
                   ))}
                 </div>
@@ -683,14 +684,14 @@ export default function ProductDetails() {
                   </div>
                   <div className="p-6 space-y-4">
                     {[
-                      { label: "Effect", values: product.effects },
-                      { label: "Format", values: product.formats },
-                      { label: "Color", values: product.colors },
+                      { label: "Effect", values: (selectedOption && selectedOption.effects && selectedOption.effects.length > 0) ? selectedOption.effects : product.effects },
+                      { label: "Format", values: (selectedOption && selectedOption.formats && selectedOption.formats.length > 0) ? selectedOption.formats : product.formats },
+                      { label: "Color", values: (selectedOption && selectedOption.colors && selectedOption.colors.length > 0) ? selectedOption.colors : product.colors },
                       { label: "Tile Use", values: product.tileUses },
                       { label: "Style", values: product.styles },
                       { label: "Material", values: product.materials },
                       { label: "Look", values: product.looks },
-                      { label: "Finish", values: product.finishes },
+                      { label: "Finish", values: (selectedOption && selectedOption.finishes && selectedOption.finishes.length > 0) ? selectedOption.finishes : product.finishes },
                     ].map(({ label, values }) =>
                       values && values.length > 0 ? (
                         <div key={label} className="flex items-start gap-4">

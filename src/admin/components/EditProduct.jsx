@@ -35,13 +35,13 @@ const AVAILABLE_MOSAICI = [
 ];
 
 const DEFAULT_ATTRIBUTES = {
-  effects: ["Concrete", "Stone", "Wood", "Marble", "Metal", "Contemporary", "Precious Metal", "Artisan", "Carpet"],
-  formats: ["Small", "Medium", "Large", "Slabs", "Planks", "Stripes", "Chevron", "Hexagon"],
+  effects: [],
+  formats: [],
   tileUses: ["Bathroom Wall", "Outdoor Wall", "Kitchen Wall", "Wall Tile", "Backsplash", "Shower Wall", "Kitchen Floor", "Floor Tile", "Bathroom Floor", "Commercial Floor", "Outdoor Floor", "Shower Floor", "Pool Tile"],
   styles: ["Traditional", "Contemporary", "Rustic", "Modern", "Transitional", "Industrial", "Classic", "Mediterranean", "Mid Century", "Farmhouse", "Craftsman", "Beach", "Cottage", "Tropical", "Art Deco", "Whimsical", "Spanish Revival"],
   materials: ["Ceramic & Porcelain", "Porcelain", "Stone", "Marble", "Glass", "Ceramic", "Terrazzo", "Pebble Tile", "Terracotta", "Lava Stone", "Clay Brick", "Cement"],
   looks: ["Stone Look", "Decorative Look", "Marble Look", "Concrete Look", "Solid Color", "Wood Look", "3D", "Subway Tile"],
-  finishes: ["Matte", "Polished", "Textured", "Satin", "Crackled"]
+  finishes: []
 };
 
 const MultiSelectGroup = ({ title, attrKey, options, selected, toggleSelection, allowCustom, customVal, setCustomVal, onAddCustom, onDeleteCustom }) => {
@@ -115,47 +115,28 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
   const [showColorsShapes, setShowColorsShapes] = useState({});
   const [name, setName] = useState(product.name || "");
 
-  const [availableColours, setAvailableColours] = useState([
-    "Azul", "Beige", "Black", "Blue", "Bronze", "Brown", "Dark Grey", "Grey", "Metallic Brown", "White"
-  ]);
-  const [availableShapes, setAvailableShapes] = useState([
-    "Chevron", "Herringbone", "Hexagon", "Pickets", "Planks", 
-    "Rectangle", "Rhombus", "Square", "Trapezium", "Triangle", "Woven Square"
-  ]);
-  const [availableMosaici, setAvailableMosaici] = useState([
-    "20.5x20.8 cm",
-    "21.1x21.1 cm",
-    "25.8x29.8 cm",
-    "26.5x34.5 cm",
-    "28.3x30.5 cm",
-    "29.4x29.8 cm",
-    "29.9x34.6 cm",
-    "29x30",
-    "30.1x29.8 cm",
-    "30.5x23.5 cm",
-    "30x26 cm",
-    "30x30",
-    "30x30 cm",
-    "31.1x37.7",
-    "31x25.5 cm",
-    "34.6x30 cm",
-    "38x38 cm",
-    "45.8x16.2 cm",
-    "Alpi Bronze Topaz"
-  ]);
+  const [availableColours, setAvailableColours] = useState([]);
+  const [availableShapes, setAvailableShapes] = useState([]);
+  const [availableMosaici, setAvailableMosaici] = useState([]);
   const [newColorInput, setNewColorInput] = useState("");
   const [newShapeInput, setNewShapeInput] = useState("");
   const [newMosaiciInput, setNewMosaiciInput] = useState("");
+  const [availableEffects, setAvailableEffects] = useState([]);
+  const [availableFormats, setAvailableFormats] = useState([]);
+  const [availableFinishes, setAvailableFinishes] = useState([]);
+  const [newEffectInput, setNewEffectInput] = useState("");
+  const [newFormatInput, setNewFormatInput] = useState("");
+  const [newFinishInput, setNewFinishInput] = useState("");
 
   const [dbAttributes, setDbAttributes] = useState({
-    colors: ["Beige", "Brown", "White", "Black", "Light Grey", "Dark Grey", "Blue"],
-    effects: ["Concrete", "Stone", "Wood", "Marble", "Metal", "Contemporary", "Precious Metal", "Artisan", "Carpet"],
-    formats: ["Small", "Medium", "Large", "Slabs", "Planks", "Stripes", "Chevron", "Hexagon"],
+    colors: [],
+    effects: [],
+    formats: [],
     tileUses: ["Bathroom Wall", "Outdoor Wall", "Kitchen Wall", "Wall Tile", "Backsplash", "Shower Wall", "Kitchen Floor", "Floor Tile", "Bathroom Floor", "Commercial Floor", "Outdoor Floor", "Shower Floor", "Pool Tile"],
     styles: ["Traditional", "Contemporary", "Rustic", "Modern", "Transitional", "Industrial", "Classic", "Mediterranean", "Mid Century", "Farmhouse", "Craftsman", "Beach", "Cottage", "Tropical", "Art Deco", "Whimsical", "Spanish Revival"],
     materials: ["Ceramic & Porcelain", "Porcelain", "Stone", "Marble", "Glass", "Ceramic", "Terrazzo", "Pebble Tile", "Terracotta", "Lava Stone", "Clay Brick", "Cement"],
     looks: ["Stone Look", "Decorative Look", "Marble Look", "Concrete Look", "Solid Color", "Wood Look", "3D", "Subway Tile"],
-    finishes: ["Matte", "Polished", "Textured", "Satin", "Crackled"]
+    finishes: []
   });
 
   React.useEffect(() => {
@@ -165,9 +146,12 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
         if (res.ok) {
           const data = await res.json();
           setDbAttributes(prev => ({ ...prev, ...data }));
-          if (data.colors && data.colors.length > 0) setAvailableColours(data.colors);
-          if (data.shapes && data.shapes.length > 0) setAvailableShapes(data.shapes);
-          if (data.mosaici && data.mosaici.length > 0) setAvailableMosaici(data.mosaici);
+          setAvailableColours(data.colors || []);
+          setAvailableShapes(data.shapes || []);
+          setAvailableMosaici(data.mosaici || []);
+          setAvailableEffects(data.effects || []);
+          setAvailableFormats(data.formats || []);
+          setAvailableFinishes(data.finishes || []);
         }
       } catch (err) {
         console.error("Error fetching attributes:", err);
@@ -214,6 +198,63 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
     }
   };
 
+  const handleAddEffectAttribute = async () => {
+    const val = newEffectInput.trim();
+    if (!val) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/attributes/effects/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value: val })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAvailableEffects(data.values);
+        setNewEffectInput("");
+      }
+    } catch (err) {
+      console.error("Error adding effect:", err);
+    }
+  };
+
+  const handleAddFormatAttribute = async () => {
+    const val = newFormatInput.trim();
+    if (!val) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/attributes/formats/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value: val })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAvailableFormats(data.values);
+        setNewFormatInput("");
+      }
+    } catch (err) {
+      console.error("Error adding format:", err);
+    }
+  };
+
+  const handleAddFinishAttribute = async () => {
+    const val = newFinishInput.trim();
+    if (!val) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/attributes/finishes/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value: val })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAvailableFinishes(data.values);
+        setNewFinishInput("");
+      }
+    } catch (err) {
+      console.error("Error adding finish:", err);
+    }
+  };
+
   const handleDeleteColorAttribute = async (val) => {
     if (!window.confirm(`Delete color "${val}"?`)) return;
     try {
@@ -245,6 +286,57 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
       }
     } catch (err) {
       console.error("Error deleting shape:", err);
+    }
+  };
+
+  const handleDeleteEffectAttribute = async (val) => {
+    if (!window.confirm(`Delete effect "${val}"?`)) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/attributes/effects/delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value: val })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAvailableEffects(data.values);
+      }
+    } catch (err) {
+      console.error("Error deleting effect:", err);
+    }
+  };
+
+  const handleDeleteFormatAttribute = async (val) => {
+    if (!window.confirm(`Delete format "${val}"?`)) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/attributes/formats/delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value: val })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAvailableFormats(data.values);
+      }
+    } catch (err) {
+      console.error("Error deleting format:", err);
+    }
+  };
+
+  const handleDeleteFinishAttribute = async (val) => {
+    if (!window.confirm(`Delete finish "${val}"?`)) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/attributes/finishes/delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value: val })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAvailableFinishes(data.values);
+      }
+    } catch (err) {
+      console.error("Error deleting finish:", err);
     }
   };
 
@@ -365,6 +457,9 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
       pricingUnit: opt.pricingUnit || "Box",
       sizes: opt.sizes || [],
       mosaici: opt.mosaici || [],
+      effects: opt.effects || [],
+      finishes: opt.finishes || [],
+      formats: opt.formats || [],
       description: opt.description || "",
       existingImages: Array.isArray(opt.images) ? [...opt.images] : [],
       newImages: Array(8).fill(null),
@@ -572,6 +667,9 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
       shapes: [],
       shape: "",
       mosaici: [],
+      effects: [],
+      formats: [],
+      finishes: [],
       name: "",
       productName: "",
       price: "",
@@ -714,15 +812,15 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
 
 
 
-    formData.append("effects", JSON.stringify(effects));
-    formData.append("formats", JSON.stringify(formats));
+    formData.append("effects", JSON.stringify([]));
+    formData.append("formats", JSON.stringify([]));
     formData.append("colors", JSON.stringify(colors));
     formData.append("tileUses", JSON.stringify(tileUses));
     formData.append("styles", JSON.stringify(styles));
     formData.append("materials", JSON.stringify(materials));
     formData.append("sizes", JSON.stringify([]));
     formData.append("looks", JSON.stringify(looks));
-    formData.append("finishes", JSON.stringify(finishes));
+    formData.append("finishes", JSON.stringify([]));
 
 
     if (video) {
@@ -797,6 +895,9 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
         sqftPerBox: opt.sqftPerBox,
         pricingUnit: opt.pricingUnit || "Box",
         sizes: opt.sizes || [],
+        effects: opt.effects || [],
+        finishes: opt.finishes || [],
+        formats: opt.formats || [],
         description: opt.description,
         existingImages: opt.existingImages,
         newFileIndices,
@@ -1019,7 +1120,7 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 italic">Colors, Shapes & Mosaici</label>
+                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 italic">Colors, Shapes, Mosaici & Attributes</label>
                       <button
                         type="button"
                         onClick={() => setShowColorsShapes(prev => ({ ...prev, [optIdx]: !prev[optIdx] }))}
@@ -1027,7 +1128,7 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
                           showColorsShapes[optIdx] ? 'bg-slate-900 border-slate-900 text-white shadow-md' : 'bg-slate-50 border-slate-300 text-slate-700 hover:bg-slate-100 hover:border-slate-400'
                         }`}
                       >
-                        <span>{showColorsShapes[optIdx] ? "✕ Close Selection" : "🎨 Choose Colors, Shapes & Mosaici"}</span>
+                        <span>{showColorsShapes[optIdx] ? "✕ Close Selection" : "🎨 Choose Colors, Shapes, Mosaici & Attributes"}</span>
                       </button>
                     </div>
 
@@ -1039,9 +1140,7 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
                             <div className="flex flex-wrap gap-1.5">
                               {Array.from(new Set([...availableColours, ...(variationColors || []).map(c => c.name)])).map((color) => {
                                 const isSelected = Array.isArray(opt.colors) && opt.colors.includes(color);
-                                const isDefaultColor = [
-                                  "Azul", "Beige", "Black", "Blue", "Bronze", "Brown", "Dark Grey", "Grey", "Metallic Brown", "White"
-                                ].includes(color);
+                                const isDefaultColor = [].includes(color);
                                 return (
                                   <button
                                     key={color}
@@ -1104,10 +1203,7 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
                             <div className="flex flex-wrap gap-1.5">
                               {availableShapes.map((shape) => {
                                 const isSelected = Array.isArray(opt.shapes) && opt.shapes.includes(shape);
-                                const isDefaultShape = [
-                                  "Chevron", "Herringbone", "Hexagon", "Pickets", "Planks", 
-                                  "Rectangle", "Rhombus", "Square", "Trapezium", "Triangle", "Woven Square"
-                                ].includes(shape);
+                                const isDefaultShape = [].includes(shape);
                                 return (
                                   <button
                                     key={shape}
@@ -1170,27 +1266,7 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
                             <div className="flex flex-wrap gap-1.5 font-sans">
                               {availableMosaici.map((mos) => {
                                 const isSelected = Array.isArray(opt.mosaici) && opt.mosaici.includes(mos);
-                                const isDefaultMosaici = [
-                                  "20.5x20.8 cm",
-                                  "21.1x21.1 cm",
-                                  "25.8x29.8 cm",
-                                  "26.5x34.5 cm",
-                                  "28.3x30.5 cm",
-                                  "29.4x29.8 cm",
-                                  "29.9x34.6 cm",
-                                  "29x30",
-                                  "30.1x29.8 cm",
-                                  "30.5x23.5 cm",
-                                  "30x26 cm",
-                                  "30x30",
-                                  "30x30 cm",
-                                  "31.1x37.7",
-                                  "31x25.5 cm",
-                                  "34.6x30 cm",
-                                  "38x38 cm",
-                                  "45.8x16.2 cm",
-                                  "Alpi Bronze Topaz"
-                                ].includes(mos);
+                                const isDefaultMosaici = [].includes(mos);
                                 return (
                                   <button
                                     key={mos}
@@ -1244,6 +1320,197 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
                                 className="px-3 py-1 bg-slate-800 text-white text-[10px] font-bold rounded-full hover:bg-black transition-colors"
                               >
                                 Add Mosaici
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8 pt-8 border-t border-slate-200">
+                          <div>
+                            <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 italic">Assign Effects</h5>
+                            <div className="flex flex-wrap gap-1.5">
+                              {availableEffects.map((eff) => {
+                                const isSelected = Array.isArray(opt.effects) && opt.effects.includes(eff);
+                                const isDefaultEffect = [].includes(eff);
+                                return (
+                                  <button
+                                    key={eff}
+                                    type="button"
+                                    onClick={() => {
+                                      const current = Array.isArray(opt.effects) ? opt.effects : [];
+                                      const updated = isSelected 
+                                        ? current.filter(e => e !== eff) 
+                                        : [...current, eff];
+                                      handleColorFieldChange(optIdx, "effects", updated);
+                                    }}
+                                    className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border uppercase tracking-wider flex items-center gap-1 ${
+                                      isSelected
+                                        ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/30'
+                                        : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-100'
+                                    }`}
+                                  >
+                                    <span>{eff}</span>
+                                    {!isDefaultEffect && (
+                                      <span 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleDeleteEffectAttribute(eff);
+                                        }}
+                                        className="ml-1 text-red-500 hover:text-red-700 font-extrabold cursor-pointer text-[9px] lowercase bg-slate-100/85 rounded-full w-3.5 h-3.5 inline-flex items-center justify-center border-none"
+                                      >
+                                        ✕
+                                      </span>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            <div className="flex gap-2 mt-3 items-center">
+                              <input 
+                                type="text" 
+                                placeholder="New effect..." 
+                                value={newEffectInput} 
+                                onChange={(e) => setNewEffectInput(e.target.value)} 
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    handleAddEffectAttribute();
+                                  }
+                                }}
+                                className="px-3 py-1 bg-white border border-slate-300 rounded-full outline-none focus:border-blue-500 font-semibold text-slate-800 text-[10px] w-28"
+                              />
+                              <button 
+                                type="button" 
+                                onClick={handleAddEffectAttribute}
+                                className="px-3 py-1 bg-slate-800 text-white text-[10px] font-bold rounded-full hover:bg-black transition-colors"
+                              >
+                                Add Effect
+                              </button>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 italic">Assign Formats</h5>
+                            <div className="flex flex-wrap gap-1.5">
+                              {availableFormats.map((form) => {
+                                const isSelected = Array.isArray(opt.formats) && opt.formats.includes(form);
+                                const isDefaultFormat = [].includes(form);
+                                return (
+                                  <button
+                                    key={form}
+                                    type="button"
+                                    onClick={() => {
+                                      const current = Array.isArray(opt.formats) ? opt.formats : [];
+                                      const updated = isSelected 
+                                        ? current.filter(f => f !== form) 
+                                        : [...current, form];
+                                      handleColorFieldChange(optIdx, "formats", updated);
+                                    }}
+                                    className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border uppercase tracking-wider flex items-center gap-1 ${
+                                      isSelected
+                                        ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/30'
+                                        : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-100'
+                                    }`}
+                                  >
+                                    <span>{form}</span>
+                                    {!isDefaultFormat && (
+                                      <span 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleDeleteFormatAttribute(form);
+                                        }}
+                                        className="ml-1 text-red-500 hover:text-red-700 font-extrabold cursor-pointer text-[9px] lowercase bg-slate-100/85 rounded-full w-3.5 h-3.5 inline-flex items-center justify-center border-none"
+                                      >
+                                        ✕
+                                      </span>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            <div className="flex gap-2 mt-3 items-center">
+                              <input 
+                                type="text" 
+                                placeholder="New format..." 
+                                value={newFormatInput} 
+                                onChange={(e) => setNewFormatInput(e.target.value)} 
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    handleAddFormatAttribute();
+                                  }
+                                }}
+                                className="px-3 py-1 bg-white border border-slate-300 rounded-full outline-none focus:border-blue-500 font-semibold text-slate-800 text-[10px] w-28"
+                              />
+                              <button 
+                                type="button" 
+                                onClick={handleAddFormatAttribute}
+                                className="px-3 py-1 bg-slate-800 text-white text-[10px] font-bold rounded-full hover:bg-black transition-colors"
+                              >
+                                Add Format
+                              </button>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 italic">Assign Finishes</h5>
+                            <div className="flex flex-wrap gap-1.5">
+                              {availableFinishes.map((fin) => {
+                                const isSelected = Array.isArray(opt.finishes) && opt.finishes.includes(fin);
+                                const isDefaultFinish = [].includes(fin);
+                                return (
+                                  <button
+                                    key={fin}
+                                    type="button"
+                                    onClick={() => {
+                                      const current = Array.isArray(opt.finishes) ? opt.finishes : [];
+                                      const updated = isSelected 
+                                        ? current.filter(f => f !== fin) 
+                                        : [...current, fin];
+                                      handleColorFieldChange(optIdx, "finishes", updated);
+                                    }}
+                                    className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border uppercase tracking-wider flex items-center gap-1 ${
+                                      isSelected
+                                        ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/30'
+                                        : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-100'
+                                    }`}
+                                  >
+                                    <span>{fin}</span>
+                                    {!isDefaultFinish && (
+                                      <span 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleDeleteFinishAttribute(fin);
+                                        }}
+                                        className="ml-1 text-red-500 hover:text-red-700 font-extrabold cursor-pointer text-[9px] lowercase bg-slate-100/85 rounded-full w-3.5 h-3.5 inline-flex items-center justify-center border-none"
+                                      >
+                                        ✕
+                                      </span>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            <div className="flex gap-2 mt-3 items-center">
+                              <input 
+                                type="text" 
+                                placeholder="New finish..." 
+                                value={newFinishInput} 
+                                onChange={(e) => setNewFinishInput(e.target.value)} 
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    handleAddFinishAttribute();
+                                  }
+                                }}
+                                className="px-3 py-1 bg-white border border-slate-300 rounded-full outline-none focus:border-blue-500 font-semibold text-slate-800 text-[10px] w-28"
+                              />
+                              <button 
+                                type="button" 
+                                onClick={handleAddFinishAttribute}
+                                className="px-3 py-1 bg-slate-800 text-white text-[10px] font-bold rounded-full hover:bg-black transition-colors"
+                              >
+                                Add Finish
                               </button>
                             </div>
                           </div>
@@ -1523,30 +1790,6 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
         {/* FILTERS */}
         <div className="space-y-0">
           <MultiSelectGroup 
-            title="Shop by Effect" 
-            attrKey="effects"
-            options={EFFECTS} 
-            selected={effects} 
-            toggleSelection={(val) => handleToggle(val, effects, setEffects)}
-            allowCustom={true}
-            customVal={customEffect}
-            setCustomVal={setCustomEffect}
-            onAddCustom={() => handleAddCustomAttribute("effects", customEffect, setCustomEffect)}
-            onDeleteCustom={(val) => handleDeleteCustomAttribute("effects", val)}
-          />
-          <MultiSelectGroup 
-            title="Shop by Format" 
-            attrKey="formats"
-            options={FORMATS} 
-            selected={formats} 
-            toggleSelection={(val) => handleToggle(val, formats, setFormats)}
-            allowCustom={true}
-            customVal={customFormat}
-            setCustomVal={setCustomFormat}
-            onAddCustom={() => handleAddCustomAttribute("formats", customFormat, setCustomFormat)}
-            onDeleteCustom={(val) => handleDeleteCustomAttribute("formats", val)}
-          />
-          <MultiSelectGroup 
             title="Tile Uses" 
             attrKey="tileUses"
             options={TILEUSES} 
@@ -1593,18 +1836,6 @@ const EditProduct = ({ product, onCancel, onSuccess }) => {
             setCustomVal={setCustomLook}
             onAddCustom={() => handleAddCustomAttribute("looks", customLook, setCustomLook)}
             onDeleteCustom={(val) => handleDeleteCustomAttribute("looks", val)}
-          />
-          <MultiSelectGroup 
-            title="Finishes" 
-            attrKey="finishes"
-            options={FINISHES} 
-            selected={finishes} 
-            toggleSelection={(val) => handleToggle(val, finishes, setFinishes)}
-            allowCustom={true}
-            customVal={customFinish}
-            setCustomVal={setCustomFinish}
-            onAddCustom={() => handleAddCustomAttribute("finishes", customFinish, setCustomFinish)}
-            onDeleteCustom={(val) => handleDeleteCustomAttribute("finishes", val)}
           />
         </div>
 

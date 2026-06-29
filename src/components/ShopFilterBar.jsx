@@ -5,7 +5,7 @@ import { COLLECTIONS } from "../admin/constants";
 
 // Filter Data
 const filterData = {
-  Colour: ["Azul", "Beige", "Black", "Blue", "Bronze", "Brown", "Dark Grey", "Grey", "Metallic Brown", "White"],
+  Colour: [],
   Collections: COLLECTIONS,
   "Tile Use": [
     "Bathroom Wall", "Wall Tile", "Kitchen Wall", "Backsplash", 
@@ -23,40 +23,17 @@ const filterData = {
   Size: [
     "1\"", "1\" Hex", "1\" Penny Round", "1.5x4\" Herringbone", "1.5x4\" Stacked", "1.5x9\"", "1x1\"", "1x2\"", "1x3\"", "1x4\"", "1x5\" Herringbone", "1x6\"", "2\" Hex", "2.5x10\"", "2x2\"", "2x7\" Fish Scale", "2x8\"", "2x9\"", "2x10\"", "2x18\"", "2x20\"", "3\"", "3\" Hex", "3x3\"", "3x4\"", "3x6\"", "3x8\"", "3x9\"", "3x10\"", "3x11\"", "3x12\"", "3x16\"", "3x18\"", "4\"", "4\" Triangle", "4.5\" Hex", "4.5x18\"", "4x4\"", "4x5\"", "4x8\"", "4x8\" & 4x4\"", "4x12\"", "4x16\"", "4x19\"", "4x21\"", "4x24\"", "4x32\"", "4x36\"", "5\"", "5x5\"", "5x5\" Checkerboard", "5x5\" Deco", "5x8\"", "5x8\" Cruz", "5x10\"", "5x12\"", "5x16\"", "5x18\"", "6\"", "6x6\"", "6x6\" & 3x8\"", "6x7\"", "6x10\"", "6x12\"", "6x16\"", "6x24\"", "7\" Hex", "7x7\"", "7x14\"", "7x60\"", "8\" Hex", "8x8\"", "8x10\"", "8x16\"", "8x24\"", "8x32\"", "8x36\"", "8x48\"", "9\" Hex", "9x9\"", "9x36\"", "10\" Hex", "10x40\"", "12.5\"", "12x12\"", "12x24\"", "12x32\"", "12x36\"", "12x48\"", "14x14\"", "16x32\"", "16x48\"", "18x18\"", "18x26\"", "18x36\"", "18x48\"", "20\" Hex", "24x24\"", "24x48\"", "30x30\"", "30x60\"", "32x32\"", "36x36\"", "48x48\"", "60x120\"", "Fish Scale", "Flagstone", "Foliage", "French Pattern", "Mosaic", "Organic Mosaic", "Thin Strip"
   ],
-  Mosaici: [
-    "20.5x20.8 cm",
-    "21.1x21.1 cm",
-    "25.8x29.8 cm",
-    "26.5x34.5 cm",
-    "28.3x30.5 cm",
-    "29.4x29.8 cm",
-    "29.9x34.6 cm",
-    "29x30",
-    "30.1x29.8 cm",
-    "30.5x23.5 cm",
-    "30x26 cm",
-    "30x30",
-    "30x30 cm",
-    "31.1x37.7",
-    "31x25.5 cm",
-    "34.6x30 cm",
-    "38x38 cm",
-    "45.8x16.2 cm",
-    "Alpi Bronze Topaz"
-  ],
+  Mosaici: [],
   Look: [
     "Stone Look", "Marble Look", "Handmade Look", "Decorative Look", "Concrete Look", 
     "Encaustic Look", "Solid Color", "3D", "Terracotta Look", "Wood Look", "Subway Tile", 
     "Terrazzo Look", "Travertine Look", "Textured Look", "Fabric Look", "Metallic Look", 
     "Limestone Look", "Checkerboard", "Beveled", "Flagstone Look"
   ],
-  Shape: [
-    "Chevron", "Herringbone", "Hexagon", "Pickets", "Planks", "Rectangle", "Rhombus", 
-    "Square", "Trapezium", "Triangle", "Woven Square"
-  ],
-  Finish: [
-    "Matte", "Polished", "Mixed Finishes", "Semi-Polished", "Crackled", "Textured", "Satin"
-  ]
+  Shape: [],
+  Finish: [],
+  Effect: [],
+  Format: []
 };
 
 function FilterDropdown({ label, options, selectedValues, onChange }) {
@@ -110,6 +87,35 @@ function FilterDropdown({ label, options, selectedValues, onChange }) {
 
 export default function ShopFilterBar() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [dynamicFilters, setDynamicFilters] = useState(filterData);
+
+  useEffect(() => {
+    const fetchDynamicFilters = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/attributes`);
+        if (res.ok) {
+          const data = await res.json();
+          setDynamicFilters({
+            Colour: data.colors || [],
+            Collections: COLLECTIONS,
+            "Tile Use": data.tileUses && data.tileUses.length > 0 ? data.tileUses : filterData["Tile Use"],
+            Style: data.styles && data.styles.length > 0 ? data.styles : filterData.Style,
+            Materials: data.materials && data.materials.length > 0 ? data.materials : filterData.Materials,
+            Size: filterData.Size,
+            Mosaici: data.mosaici || [],
+            Look: data.looks && data.looks.length > 0 ? data.looks : filterData.Look,
+            Shape: data.shapes || [],
+            Finish: data.finishes || [],
+            Effect: data.effects || [],
+            Format: data.formats || [],
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching dynamic filters:", err);
+      }
+    };
+    fetchDynamicFilters();
+  }, []);
 
   const handleFilterChange = (label, value) => {
     const newParams = new URLSearchParams(searchParams);
@@ -129,17 +135,12 @@ export default function ShopFilterBar() {
       <div className="max-w-[1400px] w-full mx-auto px-6">
         <div className="flex flex-wrap items-center gap-2 w-full">
           
-          <Link 
-            to="/collections" 
-            className="flex items-center justify-center gap-1.5 px-3.5 h-[26px] py-0 border border-gray-300 rounded-full text-xs font-bold leading-none bg-white text-gray-700 hover:border-gray-900 hover:bg-gray-50 no-underline transition-colors whitespace-nowrap cursor-pointer"
-          >
-            All Collections
-          </Link>
-          {Object.keys(filterData).map((category) => (
+
+          {Object.keys(dynamicFilters).map((category) => (
             <FilterDropdown 
               key={category}
               label={category} 
-              options={filterData[category]} 
+              options={dynamicFilters[category]} 
               selectedValues={searchParams.getAll(category)}
               onChange={(val) => handleFilterChange(category, val)}
             />
@@ -150,7 +151,6 @@ export default function ShopFilterBar() {
           >
             Clear Filters
           </button>
-
 
           
         </div>

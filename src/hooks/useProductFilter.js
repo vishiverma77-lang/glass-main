@@ -84,7 +84,7 @@ export function useProductFilter(products) {
 
   // Step 2: Filter parents first
   const filteredParents = products.filter(p => {
-    const filters = ["Colour", "Tile Use", "Style", "Materials", "Size", "Look", "Shape", "Finish", "Mosaici", "Collections"];
+    const filters = ["Colour", "Tile Use", "Style", "Materials", "Size", "Look", "Shape", "Finish", "Mosaici", "Collections", "Effect", "Format"];
     
     for (const f of filters) {
       // Gather selected filter values supporting various casings of the parameter key (e.g. Mosaici, mosaici)
@@ -115,7 +115,24 @@ export function useProductFilter(products) {
           ...(p.colorOptions?.flatMap(opt => [...(opt.shapes || []), ...(opt.shape ? [opt.shape] : [])]) || [])
         ])).filter(Boolean);
       }
-      if (f === "Finish" && p.finishes) pValues = p.finishes;
+      if (f === "Finish") {
+        pValues = Array.from(new Set([
+          ...(p.finishes || []),
+          ...(p.colorOptions?.flatMap(opt => opt.finishes || []) || [])
+        ])).filter(Boolean);
+      }
+      if (f === "Effect") {
+        pValues = Array.from(new Set([
+          ...(p.effects || []),
+          ...(p.colorOptions?.flatMap(opt => opt.effects || []) || [])
+        ])).filter(Boolean);
+      }
+      if (f === "Format") {
+        pValues = Array.from(new Set([
+          ...(p.formats || []),
+          ...(p.colorOptions?.flatMap(opt => opt.formats || []) || [])
+        ])).filter(Boolean);
+      }
       if (f === "Mosaici" && p.mosaici) pValues = p.mosaici;
       if (f === "Collections" && p.series) pValues = [p.series];
 

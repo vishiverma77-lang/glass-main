@@ -53,13 +53,17 @@ export default function AllCollectionsPage() {
         if (!res.ok) throw new Error("Failed to load products");
         const products = await res.json();
 
-        // Group counts & fallbacks
+        // Group counts, fallbacks, colors & sizes
         const counts = {};
         const fallbacks = {};
+        const collectionColors = {};
+        const collectionSizes = {};
 
         COLLECTIONS.forEach(col => {
           counts[col] = 0;
           fallbacks[col] = null;
+          collectionColors[col] = [];
+          collectionSizes[col] = new Set();
         });
 
         products.forEach(p => {
@@ -71,6 +75,60 @@ export default function AllCollectionsPage() {
               if (!fallbacks[matchedCol] && p.images && p.images.length > 0) {
                 fallbacks[matchedCol] = p.images[0];
               }
+              // Extract variation colors
+              if (p.variationColors && Array.isArray(p.variationColors)) {
+                p.variationColors.forEach(vc => {
+                  if (vc && vc.name && vc.image) {
+                    const cleanName = vc.name.trim().toLowerCase();
+                    const exists = collectionColors[matchedCol].some(item => item.name.toLowerCase() === cleanName);
+                    if (!exists) {
+                      collectionColors[matchedCol].push({
+                        name: vc.name,
+                        image: vc.image
+                      });
+                    }
+                  }
+                });
+              }
+              if (p.colorOptions && Array.isArray(p.colorOptions)) {
+                p.colorOptions.forEach(opt => {
+                  const optColors = Array.isArray(opt.colors) ? opt.colors : (opt.color ? [opt.color] : []);
+                  const optImage = opt.thumbnail || (opt.images && opt.images[0]);
+                  if (optColors.length > 0 && optImage) {
+                    optColors.forEach(colorName => {
+                      if (colorName) {
+                        const cleanName = colorName.trim().toLowerCase();
+                        const exists = collectionColors[matchedCol].some(item => item.name.toLowerCase() === cleanName);
+                        if (!exists) {
+                          collectionColors[matchedCol].push({
+                            name: colorName,
+                            image: optImage
+                          });
+                        }
+                      }
+                    });
+                  }
+                });
+              }
+              // Extract sizes
+              if (p.sizes && Array.isArray(p.sizes)) {
+                p.sizes.forEach(s => {
+                  if (s) collectionSizes[matchedCol].add(s.trim());
+                });
+              } else if (p.size) {
+                collectionSizes[matchedCol].add(p.size.trim());
+              }
+              if (p.colorOptions && Array.isArray(p.colorOptions)) {
+                p.colorOptions.forEach(opt => {
+                  if (opt.sizes && Array.isArray(opt.sizes)) {
+                    opt.sizes.forEach(s => {
+                      if (s) collectionSizes[matchedCol].add(s.trim());
+                    });
+                  } else if (opt.size) {
+                    collectionSizes[matchedCol].add(opt.size.trim());
+                  }
+                });
+              }
             }
           }
         });
@@ -79,7 +137,9 @@ export default function AllCollectionsPage() {
           name: col,
           count: counts[col],
           image: getCollectionImage(col, fallbacks[col]),
-          url: getCollectionUrl(col)
+          url: getCollectionUrl(col),
+          colors: collectionColors[col],
+          sizes: Array.from(collectionSizes[col])
         })).filter(col => col.count > 0);
 
         // Sort alphabetically (A to Z)
@@ -128,12 +188,12 @@ export default function AllCollectionsPage() {
             <p className="text-slate-400 text-xs font-black uppercase tracking-widest">No active collections found</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
             {collectionsData.map((col) => (
               <div 
                 key={col.name}
                 onClick={() => navigate(col.url)}
-                className="group cursor-pointer border border-slate-100 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full rounded-none"
+                className="group cursor-pointer border border-slate-200 bg-[#f7f7f7] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full rounded-none"
               >
                 {/* Image Container */}
                 <div className="aspect-[4/3] w-full overflow-hidden bg-slate-50 relative">
@@ -157,9 +217,57 @@ export default function AllCollectionsPage() {
                 {/* Info Container */}
                 <div className="p-6 flex-1 flex flex-col justify-between">
                   <div>
-                    <h3 className="text-base font-black text-slate-900 uppercase tracking-wider">
-                      {col.name}
-                    </h3>
+                    <div className="flex items-center justify-between gap-4 flex-wrap">
+                      <h3 className="text-base font-black text-slate-900 uppercase tracking-wider">
+                        {col.name}
+                      </h3>
+                      {col.colors && col.colors.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 items-center">
+                          {col.colors.slice(0, 4).map((colorObj) => (
+                            <div
+                              key={colorObj.name}
+                              className="w-4.5 h-4.5 rounded-full border border-black/10 overflow-hidden inline-block shadow-sm relative group/swatch cursor-pointer"
+                            >
+                              <img
+                                src={getImageUrl(colorObj.image)}
+                                alt={colorObj.name}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = "/images/stone.jpeg";
+                                }}
+                              />
+                              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 bg-black/80 backdrop-blur-sm text-white text-[8px] font-bold py-0.5 px-1.5 rounded uppercase tracking-wider whitespace-nowrap opacity-0 pointer-events-none group-hover/swatch:opacity-100 transition-opacity z-40">
+                                {colorObj.name}
+                              </span>
+                            </div>
+                          ))}
+                          {col.colors.length > 4 && (
+                            <span className="text-[12px] text-slate-400 font-black self-center ml-0.5 select-none" title="More colors available">
+                              +
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {/* Sizes list tags */}
+                    {col.sizes && col.sizes.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-3">
+                        {col.sizes.slice(0, 3).map((size) => (
+                          <span
+                            key={size}
+                            className="text-[9px] sm:text-[10px] text-slate-600 bg-slate-200/50 px-2 py-0.5 font-sans font-medium tracking-wider uppercase rounded-none border border-slate-300/30"
+                          >
+                            {size}
+                          </span>
+                        ))}
+                        {col.sizes.length > 3 && (
+                          <span className="text-[9px] sm:text-[10px] text-slate-400 font-bold self-center ml-0.5 select-none">
+                            + {col.sizes.length - 3} More
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between text-xs font-black uppercase tracking-widest text-[#002642] group-hover:text-blue-600 transition-colors">

@@ -329,8 +329,8 @@ export default function HomePage() {
             <h2 className="text-[#002642] tracking-wide mb-6 leading-tight uppercase font-normal" style={{ fontFamily: 'adobe-caslon-w01-smbd, serif', fontSize: '26px' }}>
               THE BESPOKE SURFACES
             </h2>
-            <p className="text-slate-600 text-[14px] md:text-[15px] mb-10 max-w-[440px] leading-relaxed">
-              LUXURIOUS. TIMELESS. BESPOKE. Our surfaces are part of your decor. Finishings to personalise and stylise your walls and floorings. MAKE A STATEMENT .Start transforming your spaces with us.
+            <p className="text-slate-600 text-[14px] md:text-[15px] mb-10 max-w-[440px] leading-relaxed font-light">
+              LUXURIOUS. TIMELESS. BESPOKE. Our surfaces are part of your decor. Finishings to personalise and stylise your walls and floorings. MAKE A STATEMENT. Start transforming your spaces with us.
             </p>
             <button
               onClick={() => {
@@ -344,36 +344,115 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Showcase Block 3: Living Spaces */}
-        <div className="flex flex-col md:flex-row group overflow-hidden bg-[#002642]">
-          {/* Description */}
-          <div className="w-full md:w-[40%] flex flex-col justify-center items-start pl-12 pr-6 py-16 md:pl-20 md:pr-10 lg:pl-28 lg:pr-14 xl:pl-36 xl:pr-18 bg-[#002642]">
-            <h2 className="text-white tracking-wide mb-6 leading-tight uppercase font-normal" style={{ fontFamily: 'adobe-caslon-w01-smbd, serif', fontSize: '26px' }}>
-              THE PARQUETS
-            </h2>
-            <p className="text-gray-300 text-[14px] md:text-[15px] mb-10 max-w-[440px] leading-relaxed">
-              Ceragres Luxe Parquet surfaces are made for a sustainable, future-oriented everyday life. Here you can unleash your imagination, thanks to its aesthetic configurations. Our parquets are as simple as walking on art.
-            </p>
-            <button
-              onClick={() => {
-                setActiveCategory("LIVING Spaces");
-                document.getElementById('product-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
-              className="border border-white text-white bg-transparent px-8 py-3 text-xs md:text-[13px] font-bold tracking-widest hover:bg-white hover:text-black transition-colors duration-300 uppercase"
-            >
-              SHOP THE PARQUETS
-            </button>
-          </div>
-          {/* Image (Framed Gallery Style) */}
-          <div className="w-full md:w-[60%] min-h-[350px] md:min-h-[500px] lg:min-h-[500px] p-6 md:p-10 lg:p-14 bg-[#002642] flex items-center justify-center">
-            <div className="w-full h-full overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
-              <img
-                src="/fwdimagesforsite 1/Channel.jpg?w=1200&q=80"
-                alt="gatsby"
-                loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-105"
-              />
+        {/* Showcase Block 3: The Collections (Redesigned: Designer Mood Board Sample Stack) */}
+        <div className="bg-[#002642] py-14 sm:py-20 lg:py-24 px-6 md:px-16 lg:px-24 w-full border-t border-b border-[#001a30] overflow-hidden">
+          <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24 group">
+            
+            {/* Left Content Column */}
+            <div className="w-full lg:w-[45%] flex flex-col items-start justify-center text-left">
+              <span className="text-[11px] font-black text-[#FCC201] tracking-[0.4em] uppercase mb-3 block">
+                CÉRÀGRÈS LUXE
+              </span>
+              <h2 
+                className="text-white leading-tight uppercase font-normal mb-4" 
+                style={{ fontFamily: 'adobe-caslon-w01-smbd, serif', fontSize: 'clamp(26px, 3.5vw, 42px)' }}
+              >
+                Timeless Surfaces, <br />
+                Curated Design.
+              </h2>
+              <p className="text-slate-300 text-xs sm:text-[14px] md:text-[15px] leading-relaxed mb-6 max-w-[480px] font-light font-sans">
+                Discover our curated library of premium finishes. From the rustic sustainable charm of <strong>The Parquets</strong> to the hand-crafted elegance of <strong>Bespoke Stone</strong>, we design textures that transform spaces into living art.
+              </p>
+              <button
+                onClick={() => {
+                  navigate('/collections');
+                  window.scrollTo(0, 0);
+                }}
+                className="border border-[#FCC201] text-[#FCC201] hover:bg-[#FCC201] hover:text-black bg-transparent px-8 sm:px-10 py-3.5 sm:py-4.5 text-xs md:text-[13px] font-bold tracking-[0.2em] transition-all duration-300 uppercase shadow-lg active:scale-95 w-full sm:w-auto text-center"
+              >
+                EXPLORE ALL COLLECTIONS
+              </button>
             </div>
+
+            {/* Right Interactive Mood Board Stack */}
+            <div className="w-full lg:w-[50%] flex items-center justify-center min-h-[300px] sm:min-h-[420px] md:min-h-[480px] relative mt-10 lg:mt-0">
+              {/* Central base table shadow effect */}
+              <div className="absolute w-[220px] sm:w-[350px] h-[220px] sm:h-[350px] rounded-full bg-black/5 blur-3xl pointer-events-none" />
+
+              {/* Sample 1: The Bespoke Stone (Laverton) */}
+              <div className="absolute w-[130px] h-[130px] sm:w-[200px] sm:h-[200px] md:w-[220px] md:h-[220px] bg-white p-1.5 sm:p-2.5 md:p-3 shadow-[0_15px_30px_rgba(0,0,0,0.12)] border border-gray-100/50 -translate-x-12 sm:-translate-x-24 -translate-y-10 sm:-translate-y-16 -rotate-12 transition-all duration-700 ease-out group-hover:-translate-x-16 sm:group-hover:-translate-x-32 group-hover:-translate-y-14 sm:group-hover:-translate-y-24 group-hover:-rotate-[15deg] z-10">
+                <div className="w-full h-full overflow-hidden bg-gray-50 relative group/tile">
+                  <img
+                    src="/fwdimagesforsite 1/Laverton.jpg?w=500&q=85"
+                    alt="Bespoke Stone Sample"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm text-white py-1 px-2 text-center text-[8px] sm:text-[10px] font-bold tracking-widest uppercase translate-y-full group-hover/tile:translate-y-0 transition-transform duration-300">
+                    Bespoke Stone
+                  </div>
+                </div>
+              </div>
+
+              {/* Sample 4: Carpet Series (Rift Camel) */}
+              <div className="absolute w-[120px] h-[120px] sm:w-[180px] sm:h-[180px] md:w-[200px] md:h-[200px] bg-white p-1.5 sm:p-2 md:p-3 shadow-[0_15px_30px_rgba(0,0,0,0.14)] border border-gray-100/50 translate-x-12 sm:translate-x-24 -translate-y-8 sm:-translate-y-12 rotate-12 transition-all duration-700 ease-out group-hover:translate-x-18 sm:group-hover:translate-x-36 group-hover:-translate-y-12 sm:group-hover:-translate-y-20 group-hover:rotate-[15deg] z-15">
+                <div className="w-full h-full overflow-hidden bg-gray-50 relative group/tile4">
+                  <img
+                    src="/fwdimagesforsite 1/Rift Camel Carpet.jpg?w=500&q=85"
+                    alt="Carpet Series Sample"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm text-white py-1 px-2 text-center text-[8px] sm:text-[10px] font-bold tracking-widest uppercase translate-y-full group-hover/tile4:translate-y-0 transition-transform duration-300">
+                    Carpet Series
+                  </div>
+                </div>
+              </div>
+
+              {/* Sample 2: The Parquets (Channel Wood) */}
+              <div className="absolute w-[140px] h-[140px] sm:w-[210px] sm:h-[210px] md:w-[240px] md:h-[240px] bg-white p-1.5 sm:p-2.5 md:p-3 shadow-[0_20px_40px_rgba(0,0,0,0.16)] border border-gray-100/50 translate-x-8 sm:translate-x-16 translate-y-8 sm:translate-y-12 rotate-6 transition-all duration-700 ease-out group-hover:translate-x-14 sm:group-hover:translate-x-24 group-hover:translate-y-12 sm:group-hover:translate-y-20 group-hover:rotate-[10deg] z-20">
+                <div className="w-full h-full overflow-hidden bg-gray-50 relative group/tile2">
+                  <img
+                    src="/fwdimagesforsite 1/Channel.jpg?w=500&q=85"
+                    alt="Parquet Wood Sample"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm text-white py-1 px-2 text-center text-[8px] sm:text-[10px] font-bold tracking-widest uppercase translate-y-full group-hover/tile2:translate-y-0 transition-transform duration-300">
+                    Parquet Wood
+                  </div>
+                </div>
+              </div>
+
+              {/* Sample 5: Luxury Slab (Veritaas) */}
+              <div className="absolute w-[130px] h-[130px] sm:w-[190px] sm:h-[190px] md:w-[210px] md:h-[210px] bg-white p-1.5 sm:p-2.5 md:p-3 shadow-[0_20px_40px_rgba(0,0,0,0.18)] border border-gray-100/50 -translate-x-8 sm:-translate-x-16 translate-y-2 sm:translate-y-4 -rotate-6 transition-all duration-700 ease-out group-hover:-translate-x-14 sm:group-hover:-translate-x-24 group-hover:translate-y-4 sm:group-hover:translate-y-8 group-hover:-rotate-[10deg] z-25">
+                <div className="w-full h-full overflow-hidden bg-gray-50 relative group/tile5">
+                  <img
+                    src="/fwdimagesforsite 1/Veritaas 1.jpg?w=500&q=85"
+                    alt="Luxury Slab Sample"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm text-white py-1 px-2 text-center text-[8px] sm:text-[10px] font-bold tracking-widest uppercase translate-y-full group-hover/tile5:translate-y-0 transition-transform duration-300">
+                    Luxury Slab
+                  </div>
+                </div>
+              </div>
+
+              {/* Sample 3: Precious Metal (Specchio Gold) */}
+              <div className="absolute w-[110px] h-[110px] sm:w-[160px] sm:h-[160px] md:w-[180px] md:h-[180px] bg-white p-1.5 sm:p-2 md:p-3 shadow-[0_25px_50px_rgba(0,0,0,0.22)] border border-gray-100/50 -translate-x-4 sm:-translate-x-6 translate-y-12 sm:translate-y-16 -rotate-3 transition-all duration-700 ease-out group-hover:-translate-x-6 sm:group-hover:-translate-x-8 group-hover:translate-y-16 sm:group-hover:translate-y-24 group-hover:-rotate-[8deg] z-30">
+                <div className="w-full h-full overflow-hidden bg-gray-50 relative group/tile3">
+                  <img
+                    src="/fwdimagesforsite 1/specchio oro.jpg?w=500&q=85"
+                    alt="Precious Gold Sample"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm text-white py-1 px-2 text-center text-[8px] sm:text-[10px] font-bold tracking-widest uppercase translate-y-full group-hover/tile3:translate-y-0 transition-transform duration-300">
+                    Precious Metal
+                  </div>
+                </div>
+              </div>
+
+
+
+            </div>
+
           </div>
         </div>
 
